@@ -1,0 +1,97 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+.formular h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-size: 28px;
+}
+
+.error {
+    border: 2px solid red;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
+#messages {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+}
+
+.formular {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.container {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="date"],
+textarea,
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+select[multiple] {
+    height: auto;
+    min-height: 100px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#gender {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+#gender label {
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
