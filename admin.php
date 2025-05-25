@@ -7,9 +7,9 @@
 require_once 'db.php';
 
 session_start();
-if (empty($_SESSION['is_admin'])) {
+if (empty($_SESSION['login']) || $_SESSION['login'] !=='admin') {
     header('HTTP/1.0 403 Forbidden');
-    die('Доступ запрещен');
+    die('Доступ запрещен. <a href="login.php">Войти</a>');
 }
 
 $db = getDBConnection();

@@ -10,6 +10,12 @@
 header('Content-Type: text/html; charset=UTF-8');
 
 session_start();
+if (!empty($_SESSION['is_admin'])) {
+    header('Location: admin.php');
+    exit();
+}
+
+require_once 'db.php';
 
 function generateLogin()
 {
@@ -118,10 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
     {
         try
         {
-            $user = 'u68891';
-            $pass = '3849293';
-            $pdo = new PDO('mysql:host=localhost;dbname=u68891', $user, $pass, [PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-
+            $db = getDBConnection();
             $stmt = $pdo->prepare("SELECT * FROM application WHERE user_id = ?");
             $stmt->execute([$_SESSION['uid']]);
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -273,10 +276,8 @@ else
 
     try
     {
-        $user = 'u68891';
-        $pass = '3849293';
-        $pdo = new PDO('mysql:host=localhost;dbname=u68891', $user, $pass, [PDO::ATTR_PERSISTENT => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-
+        $db = getDBConnection();
+        
         if (!empty($_SESSION['login']))
         {
             // Обновление существующей записи

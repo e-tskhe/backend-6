@@ -24,7 +24,7 @@ if (session_start()) {
     if (!empty($_SESSION['login'])) {
         // Если есть логин в сессии, то пользователь уже авторизован.
         // Делаем перенаправление на форму.
-        header('Location: index.php');
+        header('Location: ' .($_SESSION['is_admin'] ? 'admin.php' : 'index.php'));
         exit();
     }
 }
@@ -38,6 +38,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         try {
             $db = getDBConnection();
+
+            if ($_POST['login'] === 'admin') {
+                $stmt = $db->prepare("SELECT id, password_hash FROM users WHERE username = 'admin'");
+                $stmt->execute();
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($user && md5($_POST['password']) === $user['password_hash']) {
+                    if (!$session_started) session_start();
+                    $_SESSION['login'] = 'admin';
+                    $_SESSION['uid'] = $user['id'];
+                    $_SESSION['is_admin'] = true;
+                    
+                    header('Location: admin.php');
+                    exit();
+                }
+            }
 
             // Проверка логина и пароля
             $stmt = $db->prepare("SELECT id, password_hash FROM users WHERE username = ?");
@@ -54,9 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Записываем ID пользователя.
                 $_SESSION['uid'] = $user['id'];
 
-                if ($_POST['login'] === 'admin') {
-                    $_SESSION['is_admin'] = true;
-                }
+                
                 
                 // Перенаправление на главную
                 header('Location: index.php');
