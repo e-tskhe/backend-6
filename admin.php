@@ -12,7 +12,7 @@ if (empty($_SESSION['login']) || $_SESSION['login'] !=='admin') {
     die('Доступ запрещен. <a href="login.php">Войти</a>');
 }
 
-$db = getDBConnection();
+$pdo = getDBConnection();
 
 // if (!isset($_SERVER['PHP_AUTH_USER'])) {
 //   header('HTTP/1.1 401 Unanthorized');
@@ -32,34 +32,34 @@ $db = getDBConnection();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['delete'])) {
-        $stmt = $db->prepare("DELETE FROM application WHERE id = ?");
+        $stmt = $pdo->prepare("DELETE FROM application WHERE id = ?");
         $stmt->execute([$_POST['id']]);
     } elseif (isset($_POST['update'])) {
-        $stmt = $db->prepare("UPDATE application SET name = ?, phone = ?, email = ?, 
+        $stmt = $pdo->prepare("UPDATE application SET name = ?, phone = ?, email = ?, 
                             birthdate = ?, gender = ?, bio = ? WHERE id = ?");
         $stmt->execute([
             $_POST['name'], $_POST['phone'], $_POST['email'], 
             $_POST['birthdate'], $_POST['gender'], $_POST['bio'], $_POST['id']
         ]);
         
-        $db->prepare("DELETE FROM application_language WHERE application_id = ?")
+        $pdo->prepare("DELETE FROM application_language WHERE application_id = ?")
            ->execute([$_POST['id']]);
         
-        $langStmt = $db->prepare("INSERT INTO programming_language (name) VALUES (?) 
+        $langStmt = $pdo->prepare("INSERT INTO programming_language (name) VALUES (?) 
                                 ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)");
-        $appLangStmt = $db->prepare("INSERT INTO application_language (application_id, language_id) 
+        $appLangStmt = $pdo->prepare("INSERT INTO application_language (application_id, language_id) 
                                    VALUES (?, ?)");
         
         foreach ($_POST['languages'] as $langName) {
             $langStmt->execute([$langName]);
-            $langId = $db->lastInsertId();
+            $langId = $pdo->lastInsertId();
             $appLangStmt->execute([$_POST['id'], $langId]);
         }
     }
 }
 
 
-$applications = $db->query("
+$applications = $pdo->query("
     SELECT a.*, u.username, 
            GROUP_CONCAT(pl.name SEPARATOR ', ') as languages
     FROM application a
@@ -70,7 +70,7 @@ $applications = $db->query("
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 
-$languageStats = $db->query("
+$languageStats = $pdo->query("
     SELECT pl.name, COUNT(al.application_id) as user_count
     FROM programming_language pl
     LEFT JOIN application_language al ON pl.id = al.language_id

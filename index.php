@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
     {
         try
         {
-            $db = getDBConnection();
+            $pdo = getDBConnection();
             $stmt = $pdo->prepare("SELECT * FROM application WHERE user_id = ?");
             $stmt->execute([$_SESSION['uid']]);
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -276,8 +276,8 @@ else
 
     try
     {
-        $db = getDBConnection();
-        
+        $pdo getDBConnection();
+
         if (!empty($_SESSION['login']))
         {
             // Обновление существующей записи

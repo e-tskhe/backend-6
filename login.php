@@ -37,10 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = 'Введите пароль';
     } else {
         try {
-            $db = getDBConnection();
+            $pdo = getDBConnection();
 
             if ($_POST['login'] === 'admin') {
-                $stmt = $db->prepare("SELECT id, password_hash FROM users WHERE username = 'admin'");
+                $stmt = $pdo->prepare("SELECT id, password_hash FROM users WHERE username = 'admin'");
                 $stmt->execute();
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             // Проверка логина и пароля
-            $stmt = $db->prepare("SELECT id, password_hash FROM users WHERE username = ?");
+            $stmt = $pdo->prepare("SELECT id, password_hash FROM users WHERE username = ?");
             $stmt->execute([$_POST['login']]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
