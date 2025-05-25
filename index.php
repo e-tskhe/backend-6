@@ -276,7 +276,7 @@ else
 
     try
     {
-        $pdo getDBConnection();
+        $pdo = getDBConnection();
 
         if (!empty($_SESSION['login']))
         {
