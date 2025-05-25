@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="utf-8">
-    <title>Задание 5</title>
+    <title>Задание 6</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,6 +16,45 @@
     }
     ?>
 
+    <div class="auth-section">
+    <?php if (!empty($_SESSION['login'])): ?>
+        <div class="auth-info">
+            Вы вошли как: <strong><?= htmlspecialchars($_SESSION['login']) ?></strong>
+            <a href="logout.php" class="logout-btn">Выйти</a>
+            <?php if ($_SESSION['login'] === 'admin'): ?>
+                <a href="admin.php" class="logout-btn">Панель администратора</a>
+            <?php endif; ?>
+        </div>
+    <?php else: ?>
+        <form method="POST" class="auth-form">
+            <h3>Вход в систему</h3>
+            <?php if (!empty($auth_error)): ?>
+                <div class="error"><?= $auth_error ?></div>
+            <?php endif; ?>
+            
+            <div class="form-group">
+                <label for="login">Логин:</label>
+                <input type="text" id="login" name="login" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="auth-btn">Войти</button>
+            
+            <?php if (!empty($_COOKIE['login']) && !empty($_COOKIE['password'])): ?>
+                <div class="auth-hint">
+                    Ваши данные для входа:<br>
+                    Логин: <?= htmlspecialchars($_COOKIE['login']) ?><br>
+                    Пароль: <?= htmlspecialchars($_COOKIE['password']) ?>
+                </div>
+            <?php endif; ?>
+        </form>
+    <?php endif; ?>
+</div>
+
     <div class="formular">
         <form action="" method="POST">
             <h2>Анкета</h2>
@@ -23,46 +62,41 @@
             <div class="container">
                 <label for="name">ФИО:</label>
                 <input type="text" id="name" name="name" maxlength="100"
-                    <?php if ($errors['name']) {print 'class="error"';} ?> 
-                    value="<?php print htmlspecialchars($values['name']); ?>">
-                <?php if ($errors['name']) {print '<div class="error-message">'.$messages['name'].'</div>';} ?>
+                    <?php if ($errors['name']) { print 'class="error"'; } ?> 
+                    value="<?php print htmlspecialchars($values['name'] ?? ''); ?>">
             </div>
 
             <div class="container">
                 <label for="phone">Телефон:</label>
                 <input type="tel" id="phone" name="phone"
-                    <?php if ($errors['phone']) {print 'class="error"';} ?> 
-                    value="<?php print htmlspecialchars($values['phone']); ?>">
-                <?php if ($errors['phone']) {print '<div class="error-message">'.$messages['phone'].'</div>';} ?>
+                    <?php if ($errors['phone']) { print 'class="error"'; } ?> 
+                    value="<?php print htmlspecialchars($values['phone'] ?? ''); ?>">
             </div>
 
             <div class="container">
                 <label for="email">E-mail:</label>
                 <input type="email" id="email" name="email"
-                    <?php if ($errors['email']) {print 'class="error"';} ?> 
-                    value="<?php print htmlspecialchars($values['email']); ?>">
-                <?php if ($errors['email']) {print '<div class="error-message">'.$messages['email'].'</div>';} ?>
+                    <?php if ($errors['email']) { print 'class="error"'; } ?> 
+                    value="<?php print htmlspecialchars($values['email'] ?? ''); ?>">
             </div>
 
             <div class="container">
                 <label for="birthdate">Дата рождения:</label>
                 <input type="date" id="birthdate" name="birthdate"
-                    <?php if ($errors['birthdate']) {print 'class="error"';} ?> 
-                    value="<?php print htmlspecialchars($values['birthdate']); ?>">
-                <?php if ($errors['birthdate']) {print '<div class="error-message">'.$messages['birthdate'].'</div>';} ?>
+                    <?php if ($errors['birthdate']) { print 'class="error"'; } ?> 
+                    value="<?php print htmlspecialchars($values['birthdate'] ?? ''); ?>">
             </div>
 
             <div class="container">
                 <label>Пол:</label>
                 <div id="gender">
                     <input type="radio" id="male" name="gender" value="male"
-                        <?php if ($values['gender'] == 'male') {print 'checked';} ?>>
-                    <label for="male" style="font-weight: 500;">Мужской</label>
+                        <?php if (($values['gender'] ?? '') == 'male') { print 'checked'; } ?>>
+                    <label for="male">Мужской</label>
                     <input type="radio" id="female" name="gender" value="female"
-                        <?php if ($values['gender'] == 'female') {print 'checked';} ?>>
-                    <label for="female" style="font-weight: 500;">Женский</label>
+                        <?php if (($values['gender'] ?? '') == 'female') { print 'checked'; } ?>>
+                    <label for="female">Женский</label>
                 </div>
-                <?php if ($errors['gender']) {print '<div class="error-message">'.$messages['gender'].'</div>';} ?>
             </div>
 
             <div class="container">
@@ -82,27 +116,24 @@
                     }
                     ?>
                 </select>
-                <?php if ($errors['languages']) { print '<div class="error-message">Выберите хотя бы один язык программирования.</div>'; } ?>
             </div>
 
             <div class="container">
                 <label for="bio">Биография:<br></label>
                 <textarea id="bio" name="bio" rows="4"
-                    <?php if ($errors['bio']) {print 'class="error"';} ?>><?php print htmlspecialchars($values['bio']); ?></textarea>
-                <?php if ($errors['bio']) {print '<div class="error-message">'.$messages['bio'].'</div>';} ?>
+                    <?php if ($errors['bio']) { print 'class="error"'; } ?>><?php print htmlspecialchars($values['bio'] ?? ''); ?></textarea>
             </div>
 
             <div class="container">
                 <label>
                     <input type="checkbox" name="agreement" value="1"
-                        <?php if ($values['agreement']) {print 'checked';} ?>>
+                        <?php if ($values['agreement']) { print 'checked'; } ?>>
                     С контрактом ознакомлен(а)
                 </label>
-                <?php if ($errors['agreement']) {print '<div class="error-message">'.$messages['agreement'].'</div>';} ?>
             </div>
 
             <div class="container"> 
-                <button type="submit">Отправить</button>
+                <button type="submit" id='send_btn'>Отправить</button>
             </div>
         </form>
     </div>
