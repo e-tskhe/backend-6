@@ -154,6 +154,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 // Иначе, если запрос был методом POST, т.е. нужно проверить данные и сохранить их в базе данных.
 else
 {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (isset($_POST['login_form'])) {
+            header('Location: login.php');
+            exti();
+        }
+    }
+    else {
     // Проверяем ошибки.
     $errors = false;
     if (empty($_POST['name']))
@@ -344,5 +351,6 @@ else
         $messages[] = 'Ошибка базы данных: ' . $e->getMessage();
         include ('form.php');
     }
+}
 }
 

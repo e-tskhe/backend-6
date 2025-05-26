@@ -16,21 +16,15 @@ header('Content-Type: text/html; charset=UTF-8');
 
 $error = '';
 
-// В суперглобальном массиве $_SESSION хранятся переменные сессии.
-// Будем сохранять туда логин после успешной авторизации.
-$session_started = false;
-if (session_start()) {
-    $session_started = true;
-    if (!empty($_SESSION['login'])) {
-        // Если есть логин в сессии, то пользователь уже авторизован.
-        // Делаем перенаправление на форму.
-        header('Location: ' .($_SESSION['is_admin'] ? 'admin.php' : 'index.php'));
-        exit();
-    }
+if (!empty($_SESSION['login'])) {
+    header('Location: ' . (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] ? 'admin.php' : 'index.php'));
+    exit();
 }
 
+
+
 // Обработка POST-запроса
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_form'])) {
     if (empty($_POST['login'])) {
         $error = 'Введите логин';
     } elseif (empty($_POST['password'])) {

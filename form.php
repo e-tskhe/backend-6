@@ -16,44 +16,45 @@
     }
     ?>
 
-    <div class="auth-section">
-    <?php if (!empty($_SESSION['login'])): ?>
-        <div class="auth-info">
-            Вы вошли как: <strong><?= htmlspecialchars($_SESSION['login']) ?></strong>
-            <a href="logout.php" class="logout-btn">Выйти</a>
-            <?php if ($_SESSION['login'] === 'admin'): ?>
-                <a href="admin.php" class="logout-btn">Панель администратора</a>
-            <?php endif; ?>
-        </div>
-    <?php else: ?>
-        <form method="POST" class="auth-form">
-            <h3>Вход в систему</h3>
-            <?php if (!empty($auth_error)): ?>
-                <div class="error"><?= $auth_error ?></div>
-            <?php endif; ?>
-            
-            <div class="form-group">
-                <label for="login">Логин:</label>
-                <input type="text" id="login" name="login" required>
+<div class="auth-section">
+        <?php if (!empty($_SESSION['login'])): ?>
+            <div class="auth-info">
+                Вы вошли как: <strong><?= htmlspecialchars($_SESSION['login']) ?></strong>
+                <a href="logout.php" class="logout-btn">Выйти</a>
+                <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
+                    <a href="admin.php" class="logout-btn admin">Панель управления</a>
+                <?php endif; ?>
             </div>
-
-            <div class="form-group">
-                <label for="password">Пароль:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            
-            <button type="submit" class="auth-btn">Войти</button>
-            
-            <?php if (!empty($_COOKIE['login']) && !empty($_COOKIE['password'])): ?>
-                <div class="auth-hint">
-                    Ваши данные для входа:<br>
-                    Логин: <?= htmlspecialchars($_COOKIE['login']) ?><br>
-                    Пароль: <?= htmlspecialchars($_COOKIE['password']) ?>
+        <?php else: ?>
+            <form method="POST" action="login.php" class="auth-form">
+                <h3>Вход в систему</h3>
+                <?php if (!empty($auth_error)): ?>
+                    <div class="error"><?= htmlspecialchars($auth_error) ?></div>
+                <?php endif; ?>
+                
+                <div class="form-group">
+                    <label for="login">Логин:</label>
+                    <input type="text" id="login" name="login" required>
                 </div>
-            <?php endif; ?>
-        </form>
-    <?php endif; ?>
-</div>
+
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <?php if (!empty($_COOKIE['login']) && !empty($_COOKIE['password'])): ?>
+                    <div class="auth-hint">
+                        Ваши данные для входа:<br>
+                        Логин: <?= htmlspecialchars($_COOKIE['login']) ?><br>
+                        Пароль: <?= htmlspecialchars($_COOKIE['password']) ?>
+                    </div>
+                <?php endif; ?>
+
+                <button type="submit" class="auth-btn">Войти</button>
+            </form>
+        <?php endif; ?>
+    </div>
+
 
     <div class="formular">
         <form action="" method="POST">
