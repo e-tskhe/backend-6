@@ -10,11 +10,6 @@
 header('Content-Type: text/html; charset=UTF-8');
 
 session_start();
-if (!empty($_SESSION['is_admin'])) {
-    header('Location: admin.php');
-    exit();
-}
-
 require_once 'db.php';
 
 function generateLogin()

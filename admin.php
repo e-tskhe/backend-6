@@ -7,28 +7,12 @@
 require_once 'db.php';
 
 session_start();
-if (empty($_SESSION['login']) || $_SESSION['login'] !=='admin') {
+if (empty($_SESSION['login']) || $_SESSION['login'] !== 'admin') {
     header('HTTP/1.0 403 Forbidden');
     die('Доступ запрещен. <a href="login.php">Войти</a>');
 }
 
 $pdo = getDBConnection();
-
-// if (!isset($_SERVER['PHP_AUTH_USER'])) {
-//   header('HTTP/1.1 401 Unanthorized');
-//   header('WWW-Authenticate: Basic realm="My site"');
-//   print('<h1>401 Требуется авторизация</h1>');
-//   exit();
-// }
-// else {
-//     if ($_SERVER['PHP_AUTH_USER'] != $valid_username || $_SERVER['PHP_AUTH_PASSWORD'] != $valid_password) {
-//         header('HTTP/1.0 401 Unauthorised');
-//         exit();
-//     }
-// }
-
-// print('Вы успешно авторизовались и видите защищенные паролем данные.');
-
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['delete'])) {
