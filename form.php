@@ -16,7 +16,7 @@
     }
     ?>
 
-<div class="auth-section">
+    <div class="auth-section">
         <?php if (!empty($_SESSION['login'])): ?>
             <div class="auth-info">
                 Вы вошли как: <strong><?= htmlspecialchars($_SESSION['login']) ?></strong>

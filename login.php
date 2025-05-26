@@ -14,8 +14,6 @@ require_once 'db.php';
 
 header('Content-Type: text/html; charset=UTF-8');
 
-$error = '';
-
 session_start();
 
 if (!empty($_SESSION['login'])) {
@@ -23,41 +21,47 @@ if (!empty($_SESSION['login'])) {
     exit();
 }
 
-
+$error = '';
 
 // Обработка POST-запроса
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_form'])) {
-    $login = trim($_POST['login'] ?? '');
-    $password = trim($_POST['password'] ?? '');
-    try {
-        $pdo = getDBConnection();
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (empty($_POST['login'])) {
+        $error = 'Введите логин';
+    }
+    elseif (empty($_POST['password'])) {
+        $error = 'Введите пароль';
+    }
+    else {
+        try {
+            $pdo = getDBConnection();
 
-        $stmt = $pdo->prepare("SELECT id, username, password_hash FROM users WHERE username = ?");
-        $stmt->execute([$login]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt = $pdo->prepare("SELECT id, username, password_hash FROM users WHERE username = ?");
+            $stmt->execute([$login]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && md5($password) === $user['password_hash']) {
-            // Если все ок, то авторизуем пользователя.
-            $_SESSION['login'] = $_POST['login'];
-            // Записываем ID пользователя.
-            $_SESSION['uid'] = $user['id'];
+            if ($user && md5($_POST['password']) === $user['password_hash']) {
+                // Если все ок, то авторизуем пользователя.
+                $_SESSION['login'] = $_POST['username'];
+                // Записываем ID пользователя.
+                $_SESSION['uid'] = $user['id'];
 
-            if ($user['username'] === 'admin') {
-                $_SESSION['is_admin'] = true;
-                header('Location: admin.php');
+                if ($user['username'] === 'admin') {
+                    $_SESSION['is_admin'] = true;
+                    header('Location: admin.php');
+                } else {
+                    $_SESSION['is_admin'] = false;
+                    header('Location: index.php');
+                }
+                exit();
             } else {
-                $_SESSION['is_admin'] = false;
-                header('Location: index.php');
+                // Неверный логин/пароль
+                $error = "Неверный логин или пароль";
             }
-            exit();
-        } else {
-            // Неверный логин/пароль
-            $error = "Неверный логин или пароль";
-        }
         } catch (PDOException $e) {
             $error = "Ошибка базы данных: " . $e->getMessage();
         }
     }
+}
 ?>
 
 <!DOCTYPE html>
