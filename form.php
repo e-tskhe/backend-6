@@ -21,7 +21,7 @@
             <div class="auth-info">
                 Вы вошли как: <strong><?= htmlspecialchars($_SESSION['login']) ?></strong>
                 <a href="logout.php" class="logout-btn">Выйти</a>
-                <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
+                <?php if ($_SESSION['login'] === 'admin'): ?>
                     <a href="admin.php" class="logout-btn admin">Панель управления</a>
                 <?php endif; ?>
             </div>

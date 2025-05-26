@@ -7,9 +7,10 @@
 require_once 'db.php';
 
 session_start();
+
 if (empty($_SESSION['login']) || $_SESSION['login'] !== 'admin') {
-    header('HTTP/1.0 403 Forbidden');
-    die('Доступ запрещен. <a href="login.php">Войти</a>');
+    header('HTTP/1.1 404 Not Found');
+    die('Страница не найдена');
 }
 
 $pdo = getDBConnection();
