@@ -27,20 +27,9 @@
             </div>
         <?php else: ?>
             <form method="POST" action="login.php" class="auth-form">
-                <h3>Вход в систему</h3>
                 <?php if (!empty($auth_error)): ?>
-                    <div class="error"><?= htmlspecialchars($auth_error) ?></div>
+                <div class="error"><?= $auth_error ?></div>
                 <?php endif; ?>
-                
-                <div class="form-group">
-                    <label for="login">Логин:</label>
-                    <input type="text" id="login" name="login" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Пароль:</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
                 
                 <?php if (!empty($_COOKIE['login']) && !empty($_COOKIE['password'])): ?>
                     <div class="auth-hint">
@@ -49,8 +38,8 @@
                         Пароль: <?= htmlspecialchars($_COOKIE['password']) ?>
                     </div>
                 <?php endif; ?>
-
-                <button type="submit" class="auth-btn">Войти</button>
+                
+                <a href='login.php' class='auth-btn'>Войти для изменения данных</a>
             </form>
         <?php endif; ?>
     </div>

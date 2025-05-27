@@ -13,19 +13,16 @@ if (empty($_SERVER['PHP_AUTH_USER']) ||
 require_once 'db.php';
 
 
-
 $db = getDBConnection();
 
-// Обработка удаления записи
+
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     $db->beginTransaction();
     
-    // Удаляем связи с языками
     $stmt = $db->prepare("DELETE FROM application_language WHERE application_id = ?");
     $stmt->execute([$id]);
     
-    // Удаляем саму заявку
     $stmt = $db->prepare("DELETE FROM application WHERE id = ?");
     $stmt->execute([$id]);
     
@@ -34,7 +31,6 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
-// Обработка обновления записи
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
     $id = (int)$_POST['id'];
     
@@ -50,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
         $id
     ]);
 
-    // Обновляем языки
     $db->prepare("DELETE FROM application_language WHERE application_id = ?")->execute([$id]);
     
     $langStmt = $db->prepare("INSERT INTO programming_language (name) VALUES (?) 
@@ -68,7 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
     exit();
 }
 
-// Получаем статистику по языкам
 $languagesStats = $db->query("
     SELECT pl.name, COUNT(al.application_id) as user_count 
     FROM programming_language pl
@@ -77,7 +71,6 @@ $languagesStats = $db->query("
     ORDER BY user_count DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-// Получаем все заявки с языками
 $applications = $db->query("
     SELECT a.id, a.user_id, a.name, a.phone, a.email, a.birthdate, a.gender, a.bio,
             GROUP_CONCAT(pl.name SEPARATOR ', ') as languages
@@ -94,81 +87,7 @@ $applications = $db->query("
 <head>
     <meta charset="UTF-8">
     <title>Панель администратора</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .stats {
-            margin-bottom: 30px;
-            padding: 15px;
-            background: #f0f8ff;
-            border-radius: 5px;
-        }
-        .edit-form {
-            display: none;
-            background: #f9f9f9;
-            padding: 20px;
-            margin: 20px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .edit-form label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-        .edit-form input, .edit-form textarea, .edit-form select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-        .edit-form select[multiple] {
-            height: 150px;
-        }
-        button, .button {
-            padding: 5px 10px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        button:hover, .button:hover {
-            background: #45a049;
-        }
-        .delete-btn {
-            background: #f44336;
-        }
-        .delete-btn:hover {
-            background: #d32f2f;
-        }
-        .edit-btn {
-            background: #2196F3;
-        }
-        .edit-btn:hover {
-            background: #0b7dda;
-        }
-    </style>
+    <link rel="stylesheet" href="style_admin.css">
 </head>
 <body>
     <h1>Панель администратора</h1>
@@ -216,7 +135,6 @@ $applications = $db->query("
             </td>
         </tr>
         
-        <!-- Форма редактирования (скрыта по умолчанию) -->
         <tr id="edit-form-<?= $app['id'] ?>" class="edit-form">
             <td colspan="8">
                 <form method="POST">
@@ -272,15 +190,12 @@ $applications = $db->query("
     
     <script>
         function showEditForm(id) {
-            // Скрываем все формы редактирования
             document.querySelectorAll('.edit-form').forEach(form => {
                 form.style.display = 'none';
             });
             
-            // Показываем нужную форму
             document.getElementById('edit-form-' + id).style.display = 'table-row';
             
-            // Прокручиваем к форме
             document.getElementById('edit-form-' + id).scrollIntoView({ behavior: 'smooth' });
         }
         
