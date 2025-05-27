@@ -13,85 +13,81 @@ if (empty($_SERVER['PHP_AUTH_USER']) ||
 require_once 'db.php'
 
 
-try {
-    $db = getDBConnection();
 
-    // Обработка удаления записи
-    if (isset($_GET['delete'])) {
-        $id = (int)$_GET['delete'];
-        $db->beginTransaction();
-        
-        // Удаляем связи с языками
-        $stmt = $db->prepare("DELETE FROM application_language WHERE application_id = ?");
-        $stmt->execute([$id]);
-        
-        // Удаляем саму заявку
-        $stmt = $db->prepare("DELETE FROM application WHERE id = ?");
-        $stmt->execute([$id]);
-        
-        $db->commit();
-        header('Location: admin.php');
-        exit();
-    }
+$db = getDBConnection();
 
-    // Обработка обновления записи
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
-        $id = (int)$_POST['id'];
-        
-        $stmt = $db->prepare("UPDATE application SET name = ?, phone = ?, email = ?, 
-                             birthdate = ?, gender = ?, bio = ? WHERE id = ?");
-        $stmt->execute([
-            $_POST['name'],
-            $_POST['phone'],
-            $_POST['email'],
-            $_POST['birthdate'],
-            $_POST['gender'],
-            $_POST['bio'],
-            $id
-        ]);
-
-        // Обновляем языки
-        $db->prepare("DELETE FROM application_language WHERE application_id = ?")->execute([$id]);
-        
-        $langStmt = $db->prepare("INSERT INTO programming_language (name) VALUES (?) 
-                                ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)");
-        $appLangStmt = $db->prepare("INSERT INTO application_language (application_id, language_id) 
-                                   VALUES (?, ?)");
-
-        foreach ($_POST['languages'] as $langName) {
-            $langStmt->execute([$langName]);
-            $langId = $db->lastInsertId();
-            $appLangStmt->execute([$id, $langId]);
-        }
-        
-        header('Location: admin.php');
-        exit();
-    }
-
-    // Получаем статистику по языкам
-    $languagesStats = $db->query("
-        SELECT pl.name, COUNT(al.application_id) as user_count 
-        FROM programming_language pl
-        LEFT JOIN application_language al ON pl.id = al.language_id
-        GROUP BY pl.name
-        ORDER BY user_count DESC
-    ")->fetchAll(PDO::FETCH_ASSOC);
-
-    // Получаем все заявки с языками
-    $applications = $db->query("
-        SELECT a.id, a.user_id, a.name, a.phone, a.email, a.birthdate, a.gender, a.bio,
-               GROUP_CONCAT(pl.name SEPARATOR ', ') as languages
-        FROM application a
-        LEFT JOIN application_language al ON a.id = al.application_id
-        LEFT JOIN programming_language pl ON al.language_id = pl.id
-        GROUP BY a.id
-        ORDER BY a.id DESC
-    ")->fetchAll(PDO::FETCH_ASSOC);
-
-} catch(PDOException $e) {
-    print('Ошибка базы данных: ' . $e->getMessage());
+// Обработка удаления записи
+if (isset($_GET['delete'])) {
+    $id = (int)$_GET['delete'];
+    $db->beginTransaction();
+    
+    // Удаляем связи с языками
+    $stmt = $db->prepare("DELETE FROM application_language WHERE application_id = ?");
+    $stmt->execute([$id]);
+    
+    // Удаляем саму заявку
+    $stmt = $db->prepare("DELETE FROM application WHERE id = ?");
+    $stmt->execute([$id]);
+    
+    $db->commit();
+    header('Location: admin.php');
     exit();
 }
+
+// Обработка обновления записи
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
+    $id = (int)$_POST['id'];
+    
+    $stmt = $db->prepare("UPDATE application SET name = ?, phone = ?, email = ?, 
+                            birthdate = ?, gender = ?, bio = ? WHERE id = ?");
+    $stmt->execute([
+        $_POST['name'],
+        $_POST['phone'],
+        $_POST['email'],
+        $_POST['birthdate'],
+        $_POST['gender'],
+        $_POST['bio'],
+        $id
+    ]);
+
+    // Обновляем языки
+    $db->prepare("DELETE FROM application_language WHERE application_id = ?")->execute([$id]);
+    
+    $langStmt = $db->prepare("INSERT INTO programming_language (name) VALUES (?) 
+                            ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)");
+    $appLangStmt = $db->prepare("INSERT INTO application_language (application_id, language_id) 
+                                VALUES (?, ?)");
+
+    foreach ($_POST['languages'] as $langName) {
+        $langStmt->execute([$langName]);
+        $langId = $db->lastInsertId();
+        $appLangStmt->execute([$id, $langId]);
+    }
+    
+    header('Location: admin.php');
+    exit();
+}
+
+// Получаем статистику по языкам
+$languagesStats = $db->query("
+    SELECT pl.name, COUNT(al.application_id) as user_count 
+    FROM programming_language pl
+    LEFT JOIN application_language al ON pl.id = al.language_id
+    GROUP BY pl.name
+    ORDER BY user_count DESC
+")->fetchAll(PDO::FETCH_ASSOC);
+
+// Получаем все заявки с языками
+$applications = $db->query("
+    SELECT a.id, a.user_id, a.name, a.phone, a.email, a.birthdate, a.gender, a.bio,
+            GROUP_CONCAT(pl.name SEPARATOR ', ') as languages
+    FROM application a
+    LEFT JOIN application_language al ON a.id = al.application_id
+    LEFT JOIN programming_language pl ON al.language_id = pl.id
+    GROUP BY a.id
+    ORDER BY a.id DESC
+")->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 <!DOCTYPE html>
 <html lang="ru">
