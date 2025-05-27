@@ -10,7 +10,7 @@ if (empty($_SERVER['PHP_AUTH_USER']) ||
     die('<h1>401 Требуется авторизация</h1>');
 }
 
-require_once 'db.php'
+require_once 'db.php';
 
 
 
