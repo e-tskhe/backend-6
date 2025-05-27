@@ -25,6 +25,8 @@ $error = '';
 
 // Обработка POST-запроса
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $login = trim($_POST['login'] ?? '');
+    $password = trim($_POST['password'] ?? '');
     if (empty($_POST['login'])) {
         $error = 'Введите логин';
     }
