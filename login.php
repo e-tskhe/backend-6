@@ -47,13 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Записываем ID пользователя.
                 $_SESSION['uid'] = $user['id'];
 
-                if ($user['username'] === 'admin') {
-                    $_SESSION['is_admin'] = true;
-                    header('Location: admin.php');
-                } else {
-                    $_SESSION['is_admin'] = false;
-                    header('Location: index.php');
-                }
+                header('Location: index.php');
+                
                 exit();
             } else {
                 // Неверный логин/пароль
@@ -102,6 +97,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     Пароль: <?= htmlspecialchars($_COOKIE['password']) ?>
                 </div>
             <?php endif; ?>
+            <div class='auth-btn'>
+                <a href='admin.php' class='auth-text'>Войти в панель администратора</a>
+            </div>
         </form>
     </div>
 </body>
